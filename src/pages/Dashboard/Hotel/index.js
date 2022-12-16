@@ -3,9 +3,21 @@ import styled from 'styled-components';
 import useToken from '../../../hooks/useToken';
 import { getHotelsList } from '../../../services/hotelsApi';
 
-function CardHotel({ hotelName, hotelImage }) {
+function CardHotel({ hotelName, hotelImage, selected, setSelected }) {
+  const [color, setColor] = useState('#EBEBEB');
+  
+  function selectHotel() {
+    if (selected === true && color === '#EBEBEB') return;
+    if (color === '#EBEBEB') {
+      setSelected(true);
+      return setColor('#FFEED2');
+    };
+    setSelected(false);
+    return setColor('#EBEBEB');
+  }
+  console.log(selected);
   return (
-    <Card>
+    <Card onClick={() => selectHotel(hotelName)} color = {color}>
       <Container>
         <HotelImage src = {hotelImage}/>
         <HotelName>{hotelName}</HotelName>
@@ -21,24 +33,37 @@ function CardHotel({ hotelName, hotelImage }) {
 export default function Hotel() {
   const token = useToken();
   const [hotels, setHotels] = useState([]);
+  const [messageError, setMessageError] = useState('');
+  const [selected, setSelected] = useState(false);
 
   useEffect (async() => {
     try {
       const response = await getHotelsList(token);
       setHotels(response);
     } catch (error) {
-      console.error(error);
+      if(error.response.status === 404) {
+        return setMessageError('Faça primeiro um cadastro!');
+      };
+      if(error.response.status === 402) {
+        return setMessageError('Sua modalidade de ingresso não inclui hospedagem Prossiga para a escolha de atividades');
+      };
+      if(error.response.status === 403) {
+        return setMessageError('Você precisa ter confirmado pagamento antes de fazer a escolha de hospedagem');
+      };
+      return setMessageError('Ops! Algo deu errado, estamos trabalhando nisso!');
     };
   }, []);
-  console.log(hotels);
 
   return (
     <>
       <Title>Escolha de hotel e quarto</Title>
-      <SubTitle>Primeiro, escolha seu hotel</SubTitle>
-      <CardList count = {hotels.length === 0 ? 1 : hotels.length}>
-        {hotels?.map((value, index) => <CardHotel key = {index} hotelName = {value.name} hotelImage = {value.image}/>)}
-      </CardList>
+      {messageError === '' ? <>
+        <SubTitle>Primeiro, escolha seu hotel</SubTitle>
+        <CardList count = {hotels.length === 0 ? 1 : hotels.length}>
+          {hotels?.map((value, index) => <CardHotel key = {index} hotelName = {value.name} hotelImage = {value.image} selected = {selected} setSelected = {setSelected}/>)}
+        </CardList>
+      </> : <MessageError>{messageError}</MessageError>}
+      
     </>
   );
 }
@@ -70,7 +95,7 @@ const Card = styled.div`
   height: 264px;
   width: 196px;
   border-radius: 10px;
-  background-color: #EBEBEB;
+  background-color: ${props => props.color};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -98,3 +123,14 @@ const SubText = styled(Text)`
   margin-top: 5px;
 `;
 const Container = styled.div``;
+const MessageError = styled.div`
+  font-family: Arial, Helvetica, sans-serif; //Roboto
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 23px;
+  text-align: center;
+  color: #8E8E8E;
+  margin: 250px auto;
+  width: 464px;
+  text-align: center;
+`;
