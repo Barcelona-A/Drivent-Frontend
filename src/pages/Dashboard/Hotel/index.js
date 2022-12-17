@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import useToken from '../../../hooks/useToken';
 import { getHotelsList } from '../../../services/hotelsApi';
 
-function CardHotel({ hotelName, hotelImage, selected, setSelected }) {
+function CardHotel({ hotelName, hotelImage, selected, setSelected, roomsTypes }) {
   const [color, setColor] = useState('#EBEBEB');
   
   function selectHotel() {
@@ -15,14 +15,21 @@ function CardHotel({ hotelName, hotelImage, selected, setSelected }) {
     setSelected(false);
     return setColor('#EBEBEB');
   }
-  console.log(selected);
+  let roomsTypesText = '';
+  if (roomsTypes.find((value) => value === 'Single')) roomsTypesText += 'Single';
+  if (roomsTypes.find((value) => value === 'Double') && roomsTypesText === 'Single') roomsTypesText += ' e Double';
+  if (roomsTypes.find((value) => value === 'Double') && roomsTypesText === '') roomsTypesText += 'Double';
+  if (roomsTypes.find((value) => value === 'Triple') && roomsTypesText === 'Single e Double') roomsTypesText = 'Single, Double e Triple';
+  if (roomsTypes.find((value) => value === 'Triple') && (roomsTypesText === 'Single' || roomsTypesText === 'Double')) roomsTypesText += ' e Triple';
+  if (roomsTypes.find((value) => value === 'Triple') && roomsTypesText === '') roomsTypesText += 'Triple';
+
   return (
-    <Card onClick={() => selectHotel(hotelName)} color = {color}>
+    <Card onClick={selectHotel} color = {color}>
       <Container>
         <HotelImage src = {hotelImage}/>
         <HotelName>{hotelName}</HotelName>
         <Text>Tipos de acomodação:</Text>
-        <SubText>Single e Double</SubText>
+        <SubText>{roomsTypesText}</SubText>
         <Text>Vagas disponíveis:</Text>
         <SubText>103</SubText>
       </Container>
@@ -35,22 +42,19 @@ export default function Hotel() {
   const [hotels, setHotels] = useState([]);
   const [messageError, setMessageError] = useState('');
   const [selected, setSelected] = useState(false);
+  const messages = {
+    400: 'Ops! Algo deu errado, estamos trabalhando nisso!',
+    402: 'Sua modalidade de ingresso não inclui hospedagem Prossiga para a escolha de atividades',
+    403: 'Você precisa ter confirmado pagamento antes de fazer a escolha de hospedagem',
+    404: 'Faça primeiro um cadastro!'
+  };
 
   useEffect (async() => {
     try {
       const response = await getHotelsList(token);
       setHotels(response);
     } catch (error) {
-      if(error.response.status === 404) {
-        return setMessageError('Faça primeiro um cadastro!');
-      };
-      if(error.response.status === 402) {
-        return setMessageError('Sua modalidade de ingresso não inclui hospedagem Prossiga para a escolha de atividades');
-      };
-      if(error.response.status === 403) {
-        return setMessageError('Você precisa ter confirmado pagamento antes de fazer a escolha de hospedagem');
-      };
-      return setMessageError('Ops! Algo deu errado, estamos trabalhando nisso!');
+      setMessageError(messages[error.response.status]);
     };
   }, []);
 
@@ -60,10 +64,10 @@ export default function Hotel() {
       {messageError === '' ? <>
         <SubTitle>Primeiro, escolha seu hotel</SubTitle>
         <CardList count = {hotels.length === 0 ? 1 : hotels.length}>
-          {hotels?.map((value, index) => <CardHotel key = {index} hotelName = {value.name} hotelImage = {value.image} selected = {selected} setSelected = {setSelected}/>)}
+          {hotels?.map((value, index) => <CardHotel key = {index} hotelName = {value.name} hotelImage = {value.image} 
+            selected = {selected} setSelected = {setSelected} roomsTypes = {value.roomsTypes}/>)}
         </CardList>
       </> : <MessageError>{messageError}</MessageError>}
-      
     </>
   );
 }
@@ -100,6 +104,11 @@ const Card = styled.div`
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  &&:hover {
+    background-color: #FFEED2;
+    filter: brightness(0.9);
+    transition: 800ms;
+  }
 `;
 const HotelImage = styled.img`
   height: 109px;
