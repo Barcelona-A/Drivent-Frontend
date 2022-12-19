@@ -8,7 +8,7 @@ export default function Hotel() {
   const token = useToken();
   const [hotels, setHotels] = useState([]);
   const [messageError, setMessageError] = useState('');
-  const [selected, setSelected] = useState(false);
+  const [selected, setSelected] = useState(0);
   const messages = {
     400: 'Ops! Algo deu errado, estamos trabalhando nisso!',
     402: 'Sua modalidade de ingresso não inclui hospedagem Prossiga para a escolha de atividades',
@@ -31,8 +31,9 @@ export default function Hotel() {
       {messageError === '' ? <>
         <SubTitle>Primeiro, escolha seu hotel</SubTitle>
         <CardList count = {hotels.length === 0 ? 1 : hotels.length}>
-          {hotels?.map((value, index) => <HotelCard key = {index} hotelName = {value.name} hotelImage = {value.image} 
-            selected = {selected} setSelected = {setSelected} roomsTypes = {value.roomsTypes} availableVacancies = {value.availableVacancies}/>)}
+          {hotels?.map((value, index) => <HotelCard key = {index} hotelId = {value.id} hotelName = {value.name} hotelImage = {value.image} 
+            selected = {selected} setSelected = {setSelected} roomsTypes = {value.roomsTypes} 
+            availableVacancies = {value.availableVacancies}/>)}
         </CardList>
       </> : <MessageError>{messageError}</MessageError>}
     </>

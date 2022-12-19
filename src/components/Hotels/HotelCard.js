@@ -1,5 +1,6 @@
 import styled from 'styled-components';
-import { useState } from 'react';
+
+let numberId = -1;
 
 function createTypesText(roomsTypes) {
   let roomsTypesText = '';
@@ -13,22 +14,16 @@ function createTypesText(roomsTypes) {
   return roomsTypesText;
 }
 
-export function HotelCard({ hotelName, hotelImage, selected, setSelected, roomsTypes, availableVacancies }) {
-  const [color, setColor] = useState('#EBEBEB');
+export function HotelCard({ hotelName, hotelImage, hotelId, setSelected, roomsTypes, availableVacancies }) {
   const roomsTypesText = createTypesText(roomsTypes);
     
   function selectHotel() {
-    if (selected === true && color === '#EBEBEB') return;
-    if (color === '#EBEBEB') {
-      setSelected(true);
-      return setColor('#FFEED2');
-    };
-    setSelected(false);
-    return setColor('#EBEBEB');
+    setSelected(hotelId);
+    numberId = hotelId;
   }
   
   return (
-    <Card onClick={selectHotel} color = {color}>
+    <Card onClick={selectHotel} id = {hotelId}>
       <Container>
         <HotelImage src = {hotelImage}/>
         <HotelName>{hotelName}</HotelName>
@@ -45,7 +40,7 @@ const Card = styled.div`
   height: 264px;
   width: 196px;
   border-radius: 10px;
-  background-color: ${props => props.color};
+  background-color: ${({ id }) => (id === numberId ? '#FFEED2' : '#E5E5E5')};
   display: flex;
   justify-content: center;
   align-items: center;
