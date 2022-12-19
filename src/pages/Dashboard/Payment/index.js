@@ -1,17 +1,26 @@
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import useToken from '../../../hooks/useToken';
-import { searchTikets } from '../../../services/ticketsApi';
+import { createTicket, searchTikets } from '../../../services/ticketsApi';
+import Button from '../../../components/Form/Button';
+import { getPersonalInformations } from '../../../services/enrollmentApi';
+import { toast } from 'react-toastify';
 
 let number = -1;
+let typeOfHosting = '';
+let ticketModality = undefined;
+let priceTicket = 0;
+let priceHotel = 0;
 
-function TemplateTicket({ id, name, price, setSelectTicket, selectTicket }) {
+function TemplateTicket({ id, name, price, setChooseTicket, chooseTicket }) {
   function selectTicket() {
-    setSelectTicket(id);
+    setChooseTicket(id);
     number = id;
+    ticketModality = name;
 
-    console.log(number, id, selectTicket);
+    name === 'Presencial' || name === 'Online' ? (priceTicket = price / 100) : priceTicket = 0;   
   };
+
   return (
     <TicketModality className="ticketModality" onClick={selectTicket} id={id}>
       <Modality className="typo">{name}</Modality>
@@ -20,9 +29,11 @@ function TemplateTicket({ id, name, price, setSelectTicket, selectTicket }) {
   );
 }
 
-export default function Payment() {
+export default function TicketPayment() {
   const [ticket, setTicket] = useState([]);
-  const [selectTicket, setSelectTicket] = useState(0);
+  const [enrollmentId, setEnrollmentId] = useState(0);
+  const [chooseTicket, setChooseTicket] = useState(0);
+  const [chooseHotel, setChooseHotel] = useState('');
 
   const token = useToken();
   useEffect(async() => {
@@ -35,15 +46,41 @@ export default function Payment() {
       });
   }, []);
 
-  useEffect(async() => {
-    await searchTikets(token)
-      .then((response) => {
-        setTicket(response);
-      })
-      .catch(() => {
-        alert('malformed request');
-      });
-  }, []);
+  function SelectHotel({ setChooseHotel, chooseHotel, name }) {
+    setChooseHotel(name);
+    typeOfHosting = name;
+    if(name === 'Sem hotel') {
+      priceHotel = 0;
+    }
+    if(name === 'Com hotel') {
+      priceHotel = 350;
+    }
+    //console.log(chooseHotel, name);
+  };
+
+  const body = {
+    enrollmentId,
+    ticketTypeId: number,
+    status: 'RESERVAD',
+  };
+
+  async function ReservedTicket() {
+    try {
+      const enrollmented = await getPersonalInformations(token);
+      if(!enrollmented) return;
+      setEnrollmentId(enrollmented.id);
+
+      const createdTicket = await createTicket(body, token);
+      if(createdTicket) {
+        return toast('ticket Reservado!');
+      };
+    } catch (error) {
+      if (error.response.data) {
+        return toast('Voçê já possui ticket Reservado!');
+      }
+      alert('malformed request');
+    }
+  }
 
   return ticket.length === 0 ? (
     <SubTitle>Aguarde</SubTitle>
@@ -59,15 +96,57 @@ export default function Payment() {
             isRemote={isRemote}
             includesHotel={includesHotel}
             key={index + 1}
-            selectTicket={selectTicket}
-            setSelectTicket={setSelectTicket}
+            setChooseTicket={setChooseTicket}
+            chooseTicket={chooseTicket}
             id={id}
           />
         ))}
       </Applyhorizontal>
+      {ticketModality === undefined ? (
+        ''
+      ) : ticketModality === 'Online' ? (
+        <>
+          <SubTitle >Fechado! O total ficou em <strong style={{ paddingLeft: 3 }}> R$ {priceHotel + priceTicket}</strong>. Agora é só confirmar:</SubTitle>
+          <Button onClick={ReservedTicket}>RESERVAR INGRESSO</Button>
+        </>
+        
+      ) : (
+        <>
+          <SubTitle>Ótimo! Agora escolha sua modalidade de hospedagem</SubTitle>
+          <Applyhorizontal>
+            <TicketModality
+              className="ticketModality"
+              onClick={() => SelectHotel({ setChooseHotel, chooseHotel, name: 'Sem hotel' })}
+              accommodation="Sem hotel"
+            >
+              <Modality className="typo">Sem Hotel</Modality>
+              <Price className="price">R$ 0</Price>
+            </TicketModality>{' '}
+            <TicketModality
+              className="ticketModality"
+              onClick={() => SelectHotel({ setChooseHotel, chooseHotel, name: 'Com hotel' })}
+              accommodation="Com hotel"
+            >
+              <Modality className="typo">Com Hotel</Modality>
+              <Price className="price">R$ 350</Price>
+            </TicketModality>
+          </Applyhorizontal>
+
+          {typeOfHosting === '' ? '' : (<>
+            <SubTitle >Fechado! O total ficou em <strong style={{ paddingLeft: 3 }}> R$ {priceHotel + priceTicket}</strong>. Agora é só confirmar:</SubTitle>
+            <Button onClick={ReservedTicket}>RESERVAR INGRESSO</Button>
+          </>)
+          }
+        </>
+      )}
     </>
   );
 }
+//TODO pra ciar um ticket: ja tem que ter inscrição, e não pode ter ticket ja cadastrado.
+
+export const Negrito = styled.span`
+
+`;
 
 export const Modality = styled.div`
   font-family: 'Roboto';
@@ -83,20 +162,19 @@ font-size: 14px;
 
 export const SubTitle = styled.div`
   display: flex;
-  width: 450px;
-  height: 40px;
+  width: 550px;
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 400;
+  margin-top: 25px;
+  margin-bottom: 12px;
   font-size: 20px;
-  margin-bottom: 5px;
   color: #8e8e8e;
 `;
 
 export const Title = styled.div`
   display: flex;
   justify-content: left;
-  margin-bottom: 25px;
   width: 400px;
   height: 40px;
   font-family: 'Roboto';
@@ -120,9 +198,10 @@ const TicketModality = styled.div`
   align-items: center;
   width: 145px;
   height: 145px;
-  margin-right: 25px;
+  margin-right: 25PX;
+  margin-bottom: 8px;
   border-radius: 20px;
   cursor: pointer;
-  background-color: ${({ id }) => (id === number ? '#FFEED2' : '#E5E5E5')};
+  background-color: ${({ id, accommodation }) => (id === number || typeOfHosting ===  accommodation ? '#FFEED2' : '#E5E5E5')};
   border: 1px solid #cecece;
 `;
