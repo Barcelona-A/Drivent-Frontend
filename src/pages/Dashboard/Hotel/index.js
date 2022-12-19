@@ -2,40 +2,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useToken from '../../../hooks/useToken';
 import { getHotelsList } from '../../../services/hotelsApi';
-
-function CardHotel({ hotelName, hotelImage, selected, setSelected, roomsTypes }) {
-  const [color, setColor] = useState('#EBEBEB');
-  
-  function selectHotel() {
-    if (selected === true && color === '#EBEBEB') return;
-    if (color === '#EBEBEB') {
-      setSelected(true);
-      return setColor('#FFEED2');
-    };
-    setSelected(false);
-    return setColor('#EBEBEB');
-  }
-  let roomsTypesText = '';
-  if (roomsTypes.find((value) => value === 'Single')) roomsTypesText += 'Single';
-  if (roomsTypes.find((value) => value === 'Double') && roomsTypesText === 'Single') roomsTypesText += ' e Double';
-  if (roomsTypes.find((value) => value === 'Double') && roomsTypesText === '') roomsTypesText += 'Double';
-  if (roomsTypes.find((value) => value === 'Triple') && roomsTypesText === 'Single e Double') roomsTypesText = 'Single, Double e Triple';
-  if (roomsTypes.find((value) => value === 'Triple') && (roomsTypesText === 'Single' || roomsTypesText === 'Double')) roomsTypesText += ' e Triple';
-  if (roomsTypes.find((value) => value === 'Triple') && roomsTypesText === '') roomsTypesText += 'Triple';
-
-  return (
-    <Card onClick={selectHotel} color = {color}>
-      <Container>
-        <HotelImage src = {hotelImage}/>
-        <HotelName>{hotelName}</HotelName>
-        <Text>Tipos de acomodação:</Text>
-        <SubText>{roomsTypesText}</SubText>
-        <Text>Vagas disponíveis:</Text>
-        <SubText>103</SubText>
-      </Container>
-    </Card>
-  );
-}
+import { HotelCard } from '../../../components/Hotels/HotelCard';
 
 export default function Hotel() {
   const token = useToken();
@@ -64,8 +31,8 @@ export default function Hotel() {
       {messageError === '' ? <>
         <SubTitle>Primeiro, escolha seu hotel</SubTitle>
         <CardList count = {hotels.length === 0 ? 1 : hotels.length}>
-          {hotels?.map((value, index) => <CardHotel key = {index} hotelName = {value.name} hotelImage = {value.image} 
-            selected = {selected} setSelected = {setSelected} roomsTypes = {value.roomsTypes}/>)}
+          {hotels?.map((value, index) => <HotelCard key = {index} hotelName = {value.name} hotelImage = {value.image} 
+            selected = {selected} setSelected = {setSelected} roomsTypes = {value.roomsTypes} availableVacancies = {value.availableVacancies}/>)}
         </CardList>
       </> : <MessageError>{messageError}</MessageError>}
     </>
@@ -95,43 +62,6 @@ const CardList = styled.div`
   width: calc(210px * ${props => props.count});
   height: 264px;
 `;
-const Card = styled.div`
-  height: 264px;
-  width: 196px;
-  border-radius: 10px;
-  background-color: ${props => props.color};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  &&:hover {
-    background-color: #FFEED2;
-    filter: brightness(0.9);
-    transition: 800ms;
-  }
-`;
-const HotelImage = styled.img`
-  height: 109px;
-  width: 168px;
-  border-radius: 5px;
-`;
-const HotelName = styled(SubTitle)`
-  color: #343434;
-  margin-top: 10px;
-`;
-const Text = styled.p`
-  font-family: Arial, Helvetica, sans-serif; //Roboto
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 14px;
-  color: #3C3C3C;
-  margin-top: 10px;
-`;
-const SubText = styled(Text)`
-  font-weight: 400;
-  margin-top: 5px;
-`;
-const Container = styled.div``;
 const MessageError = styled.div`
   font-family: Arial, Helvetica, sans-serif; //Roboto
   font-size: 20px;
