@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { errorsMessages } from '../../../helpers/errorsMessages';
 import { getActivitiesList } from '../../../services/activitiesApi';
 import useToken from '../../../hooks/useToken';
+import { MessageError } from '../Hotel';
 
 export default function Activities() {
   const [errorMessage, setErrorMessage] = useState('');
@@ -21,7 +22,7 @@ export default function Activities() {
 
   return (
     <>
-      {errorMessage === '' ? 'Atividades em breve!' : errorMessage}
+      {errorMessage === '' ? 'Atividades em breve!' : <MessageError>{errorMessage}</MessageError>}
     </>
   );
 }
