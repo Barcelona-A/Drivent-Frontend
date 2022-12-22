@@ -106,7 +106,7 @@ export default function TicketPayment() {
         ''
       ) : ticketModality === 'Online' ? (
         <>
-          <SubTitle >Fechado! O total ficou em <strong style={{ paddingLeft: 3 }}> R$ {priceHotel + priceTicket}</strong>. Agora é só confirmar:</SubTitle>
+          <SubTitle >Fechado! O total ficou em <strong style={{ paddingLeft: 3 }}> R$ {priceTicket}</strong>. Agora é só confirmar:</SubTitle>
           <Button onClick={ReservedTicket}>RESERVAR INGRESSO</Button>
         </>
         
