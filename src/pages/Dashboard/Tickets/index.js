@@ -29,7 +29,7 @@ function TemplateTicket({ id, name, price, setChooseTicket, chooseTicket }) {
   );
 }
 
-export default function TicketPayment({ refreshTickets, setRefreshTickets }) {
+export default function TicketPayment({ refreshTicket, setRefreshTicket }) {
   const [ticket, setTicket] = useState([]);
   const [enrollmentId, setEnrollmentId] = useState(0);
   const [chooseTicket, setChooseTicket] = useState(0);
@@ -61,7 +61,7 @@ export default function TicketPayment({ refreshTickets, setRefreshTickets }) {
   const body = {
     enrollmentId,
     ticketTypeId: number,
-    status: 'RESERVAD',
+    status: 'RESERVED',
   };
 
   async function ReservedTicket() {
@@ -72,7 +72,7 @@ export default function TicketPayment({ refreshTickets, setRefreshTickets }) {
 
       const createdTicket = await createTicket(body, token);
       if(createdTicket) {
-        setRefreshTickets(!refreshTickets);
+        setRefreshTicket(!refreshTicket);
         return toast('ticket Reservado!');
       };
     } catch (error) {
@@ -89,24 +89,30 @@ export default function TicketPayment({ refreshTickets, setRefreshTickets }) {
     <>
       <SubTitle>Primeiro, escolha sua modalidade de ingresso</SubTitle>
       <Applyhorizontal>
-        {ticket.map(({ id, name, price, isRemote, includesHotel }, index) => (
-          <TemplateTicket
-            name={name}
-            price={price}
-            isRemote={isRemote}
-            includesHotel={includesHotel}
-            key={index + 1}
-            setChooseTicket={setChooseTicket}
-            chooseTicket={chooseTicket}
-            id={id}
-          />
-        ))}
+        {ticket.map(({ id, name, price, isRemote, includesHotel }, index) => {
+          if(!includesHotel) {
+            return (
+              <TemplateTicket
+                name={name}
+                price={price}
+                isRemote={isRemote}
+                includesHotel={includesHotel}
+                key={index + 1}
+                setChooseTicket={setChooseTicket}
+                chooseTicket={chooseTicket}
+                id={id}
+              />
+            );
+          } else {
+            return '';
+          }
+        })}
       </Applyhorizontal>
       {ticketModality === undefined ? (
         ''
       ) : ticketModality === 'Online' ? (
         <>
-          <SubTitle >Fechado! O total ficou em <strong style={{ paddingLeft: 3 }}> R$ {priceHotel + priceTicket}</strong>. Agora é só confirmar:</SubTitle>
+          <SubTitle >Fechado! O total ficou em <strong style={{ paddingLeft: 3 }}> R$ {priceTicket}</strong>. Agora é só confirmar:</SubTitle>
           <Button onClick={ReservedTicket}>RESERVAR INGRESSO</Button>
         </>
         
@@ -150,14 +156,14 @@ export const Negrito = styled.span`
 
 export const Modality = styled.div`
   font-family: 'Roboto';
-  font-size: 16px;
-  font-weight: 400;
-  margin-bottom: 8px;
+font-size: 16px;
+font-weight: 400;
+margin-bottom: 8px;
 `;
 
 export const Price = styled.div`
-  color: #898989;
-  font-size: 14px;
+color: #898989;
+font-size: 14px;
 `;
 
 export const SubTitle = styled.div`

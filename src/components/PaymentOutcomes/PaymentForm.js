@@ -6,8 +6,9 @@ import useToken from '../../hooks/useToken';
 import Button from '../Form/Button';
 import * as paymentApi from '../../services/paymentApi';
 import { SubTitle } from '../../layouts/Subtitle';
+import { toast } from 'react-toastify';
 
-export default function PaymentForm({ ticketId, value }) {
+export default function PaymentForm({ ticketId, value, refreshTicket, setRefreshTicket }) {
   const [number, setNumber] = useState('');
   const [name, setName] = useState('');
   const [expiry, setExpiry] = useState('');
@@ -22,7 +23,7 @@ export default function PaymentForm({ ticketId, value }) {
     }
   };
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     const cardData = {
@@ -38,13 +39,18 @@ export default function PaymentForm({ ticketId, value }) {
       value,
       cardData,
     };
-
-    paymentApi.postPayment(body, token);
+    try {
+      paymentApi.postPayment(body, token);
+      setRefreshTicket(!refreshTicket);
+      return toast('Pagamento completado com sucesso');
+    } catch (error) {
+      return toast('Ops, confira se os dados estão corretos');
+    }
   };
   
   return (
     <>
-      <SubTitle>Pagemento</SubTitle>
+      <SubTitle>Pagamento</SubTitle>
       <CardFormContainer>
         <Cards
           cvc={cvc}

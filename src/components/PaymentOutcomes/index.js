@@ -10,11 +10,14 @@ import PaymentForm from './PaymentForm';
 export default function PaymentOutcomes() {
   const { enrollment } = useEnrollment();
   const { ticket, getTicket } = useTicket();
-  const [refreshTcikets, setRefreshTickets] = useState();
+  const [refreshTciket, setRefreshTicket] = useState(false);
 
   useEffect(() => {
-    getTicket();
-  }, [ticket, refreshTcikets]);
+    getTicket()
+      .catch(() => {
+        return;
+      });
+  }, [ticket?.status, refreshTciket]);
 
   return (
     <>
@@ -26,8 +29,8 @@ export default function PaymentOutcomes() {
         : 
         !ticket ? 
           <TicketPayment 
-            refreshTickets={refreshTcikets}
-            setRefreshTickets={setRefreshTickets}
+            refreshTicket={refreshTciket}
+            setRefreshTicket={setRefreshTicket}
           />
           : 
           ticket.status === 'PAID' ? 
@@ -36,6 +39,8 @@ export default function PaymentOutcomes() {
             <PaymentForm 
               ticketId={ticket.id}
               value={ticket.TicketType.price}
+              refreshTicket={refreshTciket}
+              setRefreshTicket={setRefreshTicket}
             />} 
     </>
   ); 
