@@ -40,7 +40,7 @@ export default function PaymentForm({ ticketId, value, refreshTicket, setRefresh
       cardData,
     };
     try {
-      paymentApi.postPayment(body, token);
+      await paymentApi.postPayment(body, token);
       setRefreshTicket(!refreshTicket);
       return toast('Pagamento completado com sucesso');
     } catch (error) {

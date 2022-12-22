@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import useToken from '../../../hooks/useToken';
-import { createTicket, searchTikets } from '../../../services/ticketsApi';
+import { createTicket, searchTikets } from '../../../services/ticketApi';
 import Button from '../../../components/Form/Button';
 import { getPersonalInformations } from '../../../services/enrollmentApi';
 import { toast } from 'react-toastify';
