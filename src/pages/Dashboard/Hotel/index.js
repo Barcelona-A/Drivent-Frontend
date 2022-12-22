@@ -1,52 +1,42 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useToken from '../../../hooks/useToken';
-import { getHotelsList, getHotelsRoomsList } from '../../../services/hotelsApi';
+import { getHotelsList } from '../../../services/hotelsApi';
 import { HotelCard } from '../../../components/Hotels/HotelCard';
 import { getBooking } from '../../../services/bookingApi';
 import { BookingCard } from '../../../components/Booking/Booking';
 import { errorsMessages } from '../../../helpers/errorsMessages';
-import RoomSelector from '../../../components/Hotels/RoomSelector';
 
 export default function Hotel() {
   const token = useToken();
-  const [hasBooking, setHasBooking] = useState(false);
-  const [isChange, setIsChange] = useState(false);
   const [hotels, setHotels] = useState([]);
-  const [hotelRooms, setHotelRooms] = useState([]);
   const [booking, setBooking] = useState({});
   const [errorMessage, setErrorMessage] = useState('');
   const [selected, setSelected] = useState(0);
   
   useEffect (async() => {
     try {
-      const hotelsResponse = await getHotelsList(token);
-      const roomsResponse = await getHotelsRoomsList(token);
-      setHotels(hotelsResponse);
-      setHotelRooms(roomsResponse);
+      const response = await getHotelsList(token);
+      setHotels(response);
     } catch (error) {
       setErrorMessage(errorsMessages[error.response.status]);
     };
-  }, [isChange]);
-  
-  useEffect (async() => {
     try {
       const responseBooking = await getBooking(token);
       setBooking(responseBooking);
-      if (responseBooking) setHasBooking(current => true);
     } catch (error) {
-
+      
     }
-  }, [hasBooking, isChange]);
+  }, []);
 
   return (
     <>
       <Title>Escolha de hotel e quarto</Title>
-      {hasBooking && !isChange?
+      {booking.bookingId ? 
         <>
           <SubTitle>Você já escolheu seu quarto</SubTitle>
-          <BookingCard hotelImage={booking.hotelImage} hotelName={booking.hotelName}
-            roomName={booking.roomName} capacity={booking.capacity} otherBookings={booking.otherBookings} setIsChange={setIsChange}/>
+          <BookingCard hotelImage = {booking.hotelImage} hotelName = {booking.hotelName} 
+            roomName = {booking.roomName} capacity = {booking.capacity} otherBookings = {booking.otherBookings}/>
         </> :
         errorMessage === '' ? <>
           <SubTitle>Primeiro, escolha seu hotel</SubTitle>
@@ -55,13 +45,6 @@ export default function Hotel() {
               selected = {selected} setSelected = {setSelected} roomsTypes = {value.roomsTypes} 
               availableVacancies = {value.availableVacancies}/>)}
           </CardList>
-          {
-            selected !== 0 ?
-              <>
-                <RoomSelector hotelSelected={selected} hotelRooms={hotelRooms} setHasBooking={setHasBooking} booking={booking} isChange={isChange} setIsChange={setIsChange} />
-              </> 
-              : '' 
-          }
         </> : <MessageError>{errorMessage}</MessageError>
       }
     </>

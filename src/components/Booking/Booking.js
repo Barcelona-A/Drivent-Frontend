@@ -2,11 +2,7 @@ import { Card, Container, HotelImage, HotelName, Text, SubText } from '../Hotels
 import { roomTypes } from '../../helpers/roomTypes';
 import Button from '../Form/Button';
 
-export function BookingCard({ hotelImage, hotelName, roomName, capacity, otherBookings, setIsChange }) {
-  function handleChangeBooking() {
-    setIsChange(current => true);
-  }
-
+export function BookingCard({ hotelImage, hotelName, roomName, capacity, otherBookings }) {
   return (
     <>
       <Card style={{ backgroundColor: '#FFEED2' }}>
@@ -19,7 +15,7 @@ export function BookingCard({ hotelImage, hotelName, roomName, capacity, otherBo
           <SubText>{otherBookings === 0 ? 'Somente Você' : `Você e mais ${otherBookings}`}</SubText>
         </Container>
       </Card>
-      <Button style = {{ top: '20px' }} onClick={handleChangeBooking}>Trocar de quarto</Button>
+      <Button style = {{ top: '20px' }}>Trocar de quarto</Button>
     </>
   );
 }
