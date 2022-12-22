@@ -51,7 +51,7 @@ export default function Hotel() {
   );
 }
 
-const Title = styled.h1`
+export const Title = styled.h1`
   font-size: 34px;
   font-weight: 400;
   line-height: 39.84px;
@@ -74,7 +74,7 @@ const CardList = styled.div`
   width: calc(210px * ${props => props.count});
   height: 264px;
 `;
-const MessageError = styled.div`
+export const MessageError = styled.div`
   font-family: Arial, Helvetica, sans-serif; //Roboto
   font-size: 20px;
   font-weight: 400;
