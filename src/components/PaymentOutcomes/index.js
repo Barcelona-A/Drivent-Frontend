@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useEnrollment from '../../hooks/api/useEnrollment';
 import useTicket from '../../hooks/api/useTicket';
+import TicketPayment from '../../pages/Dashboard/Tickets';
 import ErrorMessage from '../Commons/ErrorMessage';
 import ConfirmedPayment from './ConfirmedPayment';
 import PaymentForm from './PaymentForm';
@@ -9,10 +10,11 @@ import PaymentForm from './PaymentForm';
 export default function PaymentOutcomes() {
   const { enrollment } = useEnrollment();
   const { ticket, getTicket } = useTicket();
+  const [refreshTcikets, setRefreshTickets] = useState();
 
   useEffect(() => {
     getTicket();
-  }, [ticket]);
+  }, [ticket, refreshTcikets]);
 
   return (
     <>
@@ -23,7 +25,10 @@ export default function PaymentOutcomes() {
         /> 
         : 
         !ticket ? 
-          <div>sem ticket Página do Daivison</div> 
+          <TicketPayment 
+            refreshTickets={refreshTcikets}
+            setRefreshTickets={setRefreshTickets}
+          />
           : 
           ticket.status === 'PAID' ? 
             <ConfirmedPayment/> 
