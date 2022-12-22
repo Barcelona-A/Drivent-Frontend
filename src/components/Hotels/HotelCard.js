@@ -1,18 +1,7 @@
 import styled from 'styled-components';
+import { createTypesText } from '../../helpers/roomTypes';
 
 let numberId = -1;
-
-function createTypesText(roomsTypes) {
-  let roomsTypesText = '';
-  if (roomsTypes.find((value) => value === 'Single')) roomsTypesText += 'Single';
-  if (roomsTypes.find((value) => value === 'Double') && roomsTypesText === 'Single') roomsTypesText += ' e Double';
-  if (roomsTypes.find((value) => value === 'Double') && roomsTypesText === '') roomsTypesText += 'Double';
-  if (roomsTypes.find((value) => value === 'Triple') && roomsTypesText === 'Single e Double') roomsTypesText = 'Single, Double e Triple';
-  if (roomsTypes.find((value) => value === 'Triple') && (roomsTypesText === 'Single' || roomsTypesText === 'Double')) roomsTypesText += ' e Triple';
-  if (roomsTypes.find((value) => value === 'Triple') && roomsTypesText === '') roomsTypesText += 'Triple';
-
-  return roomsTypesText;
-}
 
 export function HotelCard({ hotelName, hotelImage, hotelId, setSelected, roomsTypes, availableVacancies }) {
   const roomsTypesText = createTypesText(roomsTypes);
@@ -36,7 +25,7 @@ export function HotelCard({ hotelName, hotelImage, hotelId, setSelected, roomsTy
   );
 }
 
-const Card = styled.div`
+export const Card = styled.div`
   height: 264px;
   width: 196px;
   border-radius: 10px;
@@ -51,12 +40,12 @@ const Card = styled.div`
     transition: 800ms;
   }
 `;
-const HotelImage = styled.img`
+export const HotelImage = styled.img`
   height: 109px;
   width: 168px;
   border-radius: 5px;
 `;
-const HotelName = styled.p`
+export const HotelName = styled.p`
   color: #343434;
   margin-top: 10px;
   font-size: 20px;
@@ -64,7 +53,7 @@ const HotelName = styled.p`
   line-height: 23.44px;
   font-family: Arial, Helvetica, sans-serif; //Roboto
 `;
-const Text = styled.p`
+export const Text = styled.p`
   font-family: Arial, Helvetica, sans-serif; //Roboto
   font-size: 12px;
   font-weight: 700;
@@ -72,7 +61,7 @@ const Text = styled.p`
   color: #3C3C3C;
   margin-top: 10px;
 `;
-const SubText = styled(Text)`
+export const SubText = styled(Text)`
   font-weight: 400;
   margin-top: 5px;
   font-family: Arial, Helvetica, sans-serif; //Roboto
@@ -80,4 +69,4 @@ const SubText = styled(Text)`
   line-height: 14px;
   color: #3C3C3C;
 `;
-const Container = styled.div``;
+export const Container = styled.div``;

@@ -3,39 +3,50 @@ import styled from 'styled-components';
 import useToken from '../../../hooks/useToken';
 import { getHotelsList } from '../../../services/hotelsApi';
 import { HotelCard } from '../../../components/Hotels/HotelCard';
+import { getBooking } from '../../../services/bookingApi';
+import { BookingCard } from '../../../components/Booking/Booking';
+import { errorsMessages } from '../../../helpers/errorsMessages';
 
 export default function Hotel() {
   const token = useToken();
   const [hotels, setHotels] = useState([]);
-  const [messageError, setMessageError] = useState('');
+  const [booking, setBooking] = useState({});
+  const [errorMessage, setErrorMessage] = useState('');
   const [selected, setSelected] = useState(0);
-  const messages = {
-    400: 'Ops! Algo deu errado, estamos trabalhando nisso!',
-    402: 'Sua modalidade de ingresso não inclui hospedagem Prossiga para a escolha de atividades',
-    403: 'Você precisa ter confirmado pagamento antes de fazer a escolha de hospedagem',
-    404: 'Faça primeiro um cadastro!'
-  };
-
+  
   useEffect (async() => {
     try {
       const response = await getHotelsList(token);
       setHotels(response);
     } catch (error) {
-      setMessageError(messages[error.response.status]);
+      setErrorMessage(errorsMessages[error.response.status]);
     };
+    try {
+      const responseBooking = await getBooking(token);
+      setBooking(responseBooking);
+    } catch (error) {
+      
+    }
   }, []);
 
   return (
     <>
       <Title>Escolha de hotel e quarto</Title>
-      {messageError === '' ? <>
-        <SubTitle>Primeiro, escolha seu hotel</SubTitle>
-        <CardList count = {hotels.length === 0 ? 1 : hotels.length}>
-          {hotels?.map((value, index) => <HotelCard key = {index} hotelId = {value.id} hotelName = {value.name} hotelImage = {value.image} 
-            selected = {selected} setSelected = {setSelected} roomsTypes = {value.roomsTypes} 
-            availableVacancies = {value.availableVacancies}/>)}
-        </CardList>
-      </> : <MessageError>{messageError}</MessageError>}
+      {booking.bookingId ? 
+        <>
+          <SubTitle>Você já escolheu seu quarto</SubTitle>
+          <BookingCard hotelImage = {booking.hotelImage} hotelName = {booking.hotelName} 
+            roomName = {booking.roomName} capacity = {booking.capacity} otherBookings = {booking.otherBookings}/>
+        </> :
+        errorMessage === '' ? <>
+          <SubTitle>Primeiro, escolha seu hotel</SubTitle>
+          <CardList count = {hotels.length === 0 ? 1 : hotels.length}>
+            {hotels?.map((value, index) => <HotelCard key = {index} hotelId = {value.id} hotelName = {value.name} hotelImage = {value.image} 
+              selected = {selected} setSelected = {setSelected} roomsTypes = {value.roomsTypes} 
+              availableVacancies = {value.availableVacancies}/>)}
+          </CardList>
+        </> : <MessageError>{errorMessage}</MessageError>
+      }
     </>
   );
 }
@@ -53,7 +64,7 @@ const SubTitle = styled.h2`
   line-height: 23.44px;
   font-family: Arial, Helvetica, sans-serif; //Roboto
   color: #8E8E8E;
-  margin-top: 20px;
+  margin: 20px 0;
 `;
 const CardList = styled.div`
   display: flex;
