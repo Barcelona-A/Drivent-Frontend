@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 import { FaCheckCircle } from 'react-icons/fa';
+import { SubTitle } from '../../layouts/Subtitle';
 
 export default function ConfirmedPayment() {
   return (
     <SuccessfulPayment>
-      <h5>Pagamento</h5>
+      <SubTitle>Pagemento</SubTitle>
       <Check>
         <FaCheckCircle
           style={{
@@ -23,15 +24,6 @@ export default function ConfirmedPayment() {
 
 const SuccessfulPayment = styled.div`
     height: 90px;
-    margin-top: 10px;
-
-    & h5 {
-        font-size: 20px;
-        font-weight: 400;
-        line-height: 23px;
-        color: #8E8E8E;
-        margin-bottom: 15px;
-    }
 `; 
 
 const Check = styled.div`

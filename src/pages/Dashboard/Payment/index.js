@@ -1,5 +1,5 @@
-import PaymentForm from '../../../components/PaymentForm';
+import PaymentOutcomes from '../../../components/PaymentOutcomes';
 
 export default function Payment() {
-  return (<PaymentForm/>);
+  return (<PaymentOutcomes/>);
 }

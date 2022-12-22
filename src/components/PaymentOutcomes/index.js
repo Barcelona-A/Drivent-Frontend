@@ -1,28 +1,37 @@
+import { useEffect } from 'react';
 import styled from 'styled-components';
 import useEnrollment from '../../hooks/api/useEnrollment';
 import useTicket from '../../hooks/api/useTicket';
 import ErrorMessage from '../Commons/ErrorMessage';
 import ConfirmedPayment from './ConfirmedPayment';
+import PaymentForm from './PaymentForm';
 
-export default function PaymentForm() {
+export default function PaymentOutcomes() {
   const { enrollment } = useEnrollment();
-  const { ticket } = useTicket();
+  const { ticket, getTicket } = useTicket();
+
+  useEffect(() => {
+    getTicket();
+  }, [ticket]);
 
   return (
     <>
       <Title>Ingresso e Pagamento</Title>
-      {!enrollment ? //SEM ENROLLMENT
+      {!enrollment ? 
         <ErrorMessage 
           title={'Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso'}
         /> 
         : 
-        !ticket ? //SEM TICKET
+        !ticket ? 
           <div>sem ticket Página do Daivison</div> 
           : 
-          ticket.status === 'PAID' ? //TICKET PAGO
+          ticket.status === 'PAID' ? 
             <ConfirmedPayment/> 
-            : //TICKET RESERVADO
-            <div>Com ticket Reservado pagina da Cecilia</div>} 
+            : 
+            <PaymentForm 
+              ticketId={ticket.id}
+              value={ticket.TicketType.price}
+            />} 
     </>
   ); 
 };
