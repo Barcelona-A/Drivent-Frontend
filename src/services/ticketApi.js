@@ -1,5 +1,15 @@
 import api from './api';
 
+export async function getUserTicket(token) {
+  const response = await api.get('/tickets', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};
+
 export async function searchTikets(token) {
   const response = await api.get('/tickets/types', {
     headers: {
@@ -15,15 +25,5 @@ export async function createTicket(body, token) {
       Authorization: `Bearer ${token}`,
     },
   });
-  return response.data;
-}
-
-export async function getUserTicket(token) {
-  const response = await api.get('/tickets', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
   return response.data;
 }

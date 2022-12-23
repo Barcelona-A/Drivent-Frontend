@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import useToken from '../../../hooks/useToken';
-import { createTicket, searchTikets } from '../../../services/ticketsApi';
+import { createTicket, searchTikets } from '../../../services/ticketApi';
 import Button from '../../../components/Form/Button';
 import { getPersonalInformations } from '../../../services/enrollmentApi';
 import { toast } from 'react-toastify';
@@ -29,7 +29,7 @@ function TemplateTicket({ id, name, price, setChooseTicket, chooseTicket }) {
   );
 }
 
-export default function TicketPayment() {
+export default function TicketPayment({ refreshTicket, setRefreshTicket }) {
   const [ticket, setTicket] = useState([]);
   const [enrollmentId, setEnrollmentId] = useState(0);
   const [chooseTicket, setChooseTicket] = useState(0);
@@ -61,7 +61,7 @@ export default function TicketPayment() {
   const body = {
     enrollmentId,
     ticketTypeId: number,
-    status: 'RESERVAD',
+    status: 'RESERVED',
   };
 
   async function ReservedTicket() {
@@ -72,6 +72,7 @@ export default function TicketPayment() {
 
       const createdTicket = await createTicket(body, token);
       if(createdTicket) {
+        setRefreshTicket(!refreshTicket);
         return toast('ticket Reservado!');
       };
     } catch (error) {
@@ -86,21 +87,26 @@ export default function TicketPayment() {
     <SubTitle>Aguarde</SubTitle>
   ) : (
     <>
-      <Title>Ingresso e pagamento</Title>
       <SubTitle>Primeiro, escolha sua modalidade de ingresso</SubTitle>
       <Applyhorizontal>
-        {ticket.map(({ id, name, price, isRemote, includesHotel }, index) => (
-          <TemplateTicket
-            name={name}
-            price={price}
-            isRemote={isRemote}
-            includesHotel={includesHotel}
-            key={index + 1}
-            setChooseTicket={setChooseTicket}
-            chooseTicket={chooseTicket}
-            id={id}
-          />
-        ))}
+        {ticket.map(({ id, name, price, isRemote, includesHotel }, index) => {
+          if(!includesHotel) {
+            return (
+              <TemplateTicket
+                name={name}
+                price={price}
+                isRemote={isRemote}
+                includesHotel={includesHotel}
+                key={index + 1}
+                setChooseTicket={setChooseTicket}
+                chooseTicket={chooseTicket}
+                id={id}
+              />
+            );
+          } else {
+            return '';
+          }
+        })}
       </Applyhorizontal>
       {ticketModality === undefined ? (
         ''
