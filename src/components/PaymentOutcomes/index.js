@@ -6,6 +6,7 @@ import TicketPayment from '../../pages/Dashboard/Tickets';
 import ErrorMessage from '../Commons/ErrorMessage';
 import ConfirmedPayment from './ConfirmedPayment';
 import PaymentForm from './PaymentForm';
+import TicketSummary from './TicketSummary';
 
 export default function PaymentOutcomes() {
   const { enrollment } = useEnrollment();
@@ -34,14 +35,30 @@ export default function PaymentOutcomes() {
           />
           : 
           ticket.status === 'PAID' ? 
-            <ConfirmedPayment/> 
+            <>
+              <TicketSummary
+                isRemote={ticket.TicketType.isRemote}
+                includesHotel={ticket.TicketType.includesHotel}
+                price={ticket.TicketType.price}
+              />
+              <ConfirmedPayment/> 
+            </>
+            
             : 
-            <PaymentForm 
-              ticketId={ticket.id}
-              value={ticket.TicketType.price}
-              refreshTicket={refreshTciket}
-              setRefreshTicket={setRefreshTicket}
-            />} 
+            <>
+              <TicketSummary
+                isRemote={ticket.TicketType.isRemote}
+                includesHotel={ticket.TicketType.includesHotel}
+                price={ticket.TicketType.price}
+              />
+              <PaymentForm 
+                ticketId={ticket.id}
+                value={ticket.TicketType.price}
+                refreshTicket={refreshTciket}
+                setRefreshTicket={setRefreshTicket}
+              />
+            </>
+      } 
     </>
   ); 
 };
