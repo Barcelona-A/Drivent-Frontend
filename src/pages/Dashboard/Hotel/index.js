@@ -68,7 +68,7 @@ export default function Hotel() {
   );
 }
 
-const Title = styled.h1`
+export const Title = styled.h1`
   font-size: 34px;
   font-weight: 400;
   line-height: 39.84px;
