@@ -18,7 +18,7 @@ function TemplateTicket({ id, name, price, setChooseTicket, chooseTicket }) {
     number = id;
     ticketModality = name;
 
-    name === 'Presencial' || name === 'Online' ? (priceTicket = price / 100) : priceTicket = 0;   
+    name.toLowerCase() === 'presencial' || name.toLowerCase() === 'online' ? (priceTicket = price / 100) : priceTicket = 0;   
   };
 
   return (
@@ -208,6 +208,6 @@ const TicketModality = styled.div`
   margin-bottom: 8px;
   border-radius: 20px;
   cursor: pointer;
-  background-color: ${({ id, accommodation }) => (id === number || typeOfHosting ===  accommodation ? '#FFEED2' : '#E5E5E5')};
+  background-color: ${({ id, accommodation }) => (id === number || typeOfHosting ===  accommodation ? '#FFEED2' : '#FFFFFF')};
   border: 1px solid #cecece;
 `;
