@@ -7,17 +7,19 @@ import { getPersonalInformations } from '../../../services/enrollmentApi';
 import { toast } from 'react-toastify';
 
 let number = -1;
+let ticketTypeId, priceTicket, priceHotel = 0;
 let typeOfHosting = '';
 let ticketModality = undefined;
-let priceTicket = 0;
-let priceHotel = 0;
 
-function TemplateTicket({ id, name, price, setChooseTicket, chooseTicket }) {
+function TemplateTicket({ id, name, price, setChooseTicket, includesHotel, chooseHotel, setChooseHotel }) {
   function selectTicket() {
     setChooseTicket(id);
-    number = id;
-    ticketModality = name;
+    setChooseHotel('');
 
+    number = id;
+    typeOfHosting = '';
+    ticketTypeId = id;
+    ticketModality = name;
     name === 'Presencial' || name === 'Online' ? (priceTicket = price / 100) : priceTicket = 0;   
   };
 
@@ -49,20 +51,25 @@ export default function TicketPayment({ refreshTicket, setRefreshTicket }) {
   function SelectHotel({ setChooseHotel, chooseHotel, name }) {
     setChooseHotel(name);
     typeOfHosting = name;
+
     if(name === 'Sem hotel') {
+      const ticketType = ticket.find(({ includesHotel, name }) => name === 'Presencial' && !includesHotel);
+      ticketTypeId = ticketType.id;
       priceHotel = 0;
     }
     if(name === 'Com hotel') {
+      const ticketType = ticket.find(({ includesHotel }) => includesHotel);
+      ticketTypeId = ticketType.id;
       priceHotel = 350;
     }
-    //console.log(chooseHotel, name);
   };
-
+ 
   const body = {
     enrollmentId,
-    ticketTypeId: number,
-    status: 'RESERVED',
+    ticketTypeId: ticketTypeId,
+    status: 'RESERVAD',
   };
+  console.log(body);
 
   async function ReservedTicket() {
     try {
@@ -89,24 +96,20 @@ export default function TicketPayment({ refreshTicket, setRefreshTicket }) {
     <>
       <SubTitle>Primeiro, escolha sua modalidade de ingresso</SubTitle>
       <Applyhorizontal>
-        {ticket.map(({ id, name, price, isRemote, includesHotel }, index) => {
-          if(!includesHotel) {
-            return (
-              <TemplateTicket
-                name={name}
-                price={price}
-                isRemote={isRemote}
-                includesHotel={includesHotel}
-                key={index + 1}
-                setChooseTicket={setChooseTicket}
-                chooseTicket={chooseTicket}
-                id={id}
-              />
-            );
-          } else {
-            return '';
-          }
-        })}
+        {ticket.map(({ id, name, price, isRemote, includesHotel }, index) => ( !includesHotel ?
+          <TemplateTicket
+            name={name}
+            price={price}
+            isRemote={isRemote}
+            includesHotel={includesHotel}
+            key={index + 1}
+            setChooseTicket={setChooseTicket}
+            chooseTicket={chooseTicket}
+            setChooseHotel={setChooseHotel}
+            chooseHotel={chooseHotel}
+            id={id}
+          /> : ''
+        ))}
       </Applyhorizontal>
       {ticketModality === undefined ? (
         ''
@@ -126,7 +129,7 @@ export default function TicketPayment({ refreshTicket, setRefreshTicket }) {
               accommodation="Sem hotel"
             >
               <Modality className="typo">Sem Hotel</Modality>
-              <Price className="price">R$ 0</Price>
+              <Price className="price">+ R$ 0</Price>
             </TicketModality>{' '}
             <TicketModality
               className="ticketModality"
@@ -134,7 +137,7 @@ export default function TicketPayment({ refreshTicket, setRefreshTicket }) {
               accommodation="Com hotel"
             >
               <Modality className="typo">Com Hotel</Modality>
-              <Price className="price">R$ 350</Price>
+              <Price className="price">+ R$ 350</Price>
             </TicketModality>
           </Applyhorizontal>
 
@@ -148,11 +151,6 @@ export default function TicketPayment({ refreshTicket, setRefreshTicket }) {
     </>
   );
 }
-//TODO pra ciar um ticket: ja tem que ter inscrição, e não pode ter ticket ja cadastrado.
-
-export const Negrito = styled.span`
-
-`;
 
 export const Modality = styled.div`
   font-family: 'Roboto';
@@ -208,6 +206,7 @@ const TicketModality = styled.div`
   margin-bottom: 8px;
   border-radius: 20px;
   cursor: pointer;
-  background-color: ${({ id, accommodation }) => (id === number || typeOfHosting ===  accommodation ? '#FFEED2' : '#E5E5E5')};
+  background-color: ${({ id, accommodation }) => 
+    (id === number || typeOfHosting ===  accommodation ? '#FFEED2' : '#E5E5E5')};
   border: 1px solid #cecece;
 `;
