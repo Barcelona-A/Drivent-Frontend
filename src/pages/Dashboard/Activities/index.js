@@ -14,7 +14,6 @@ export default function Activities() {
       const response = await getActivitiesList(token);
       setActivities(response);
     } catch (error) {
-      console.error(error);
       setErrorMessage(errorsMessagesActivities[error.response.status]);
     }
   }, []);
