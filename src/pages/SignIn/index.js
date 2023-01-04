@@ -13,6 +13,9 @@ import EventInfoContext from '../../contexts/EventInfoContext';
 import UserContext from '../../contexts/UserContext';
 
 import useSignIn from '../../hooks/api/useSignIn';
+import { getAuth, signInWithPopup, getRedirectResult, GithubAuthProvider } from 'firebase/auth';
+import { githubProvider } from '../../config/firebaseMethod';
+import socialMediaAuth from '../../config/firebaseAuth';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
@@ -22,6 +25,7 @@ export default function SignIn() {
 
   const { eventInfo } = useContext(EventInfoContext);
   const { setUserData } = useContext(UserContext);
+  //const provider = new GithubAuthProvider();
 
   const navigate = useNavigate();
   
@@ -36,8 +40,13 @@ export default function SignIn() {
     } catch (err) {
       toast('Não foi possível fazer o login!');
     }
-  } 
+  }
 
+  async function gitHub(provider) {
+    const res = await socialMediaAuth(provider);
+    console.log(res);
+  }
+  
   return (
     <AuthLayout background={eventInfo.backgroundImageUrl}>
       <Row>
@@ -50,6 +59,7 @@ export default function SignIn() {
           <Input label="E-mail" type="text" fullWidth value={email} onChange={e => setEmail(e.target.value)} />
           <Input label="Senha" type="password" fullWidth value={password} onChange={e => setPassword(e.target.value)} />
           <Button type="submit" color="primary" fullWidth disabled={loadingSignIn}>Entrar</Button>
+          <Button onClick = {() => gitHub(githubProvider)} color="" fullWidth disabled={loadingSignIn}>Entre com GitHub</Button>
         </form>
       </Row>
       <Row>
