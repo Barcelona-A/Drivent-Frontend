@@ -15,12 +15,12 @@ function TemplateTicket({ id, name, price, setChooseTicket, includesHotel, choos
   function selectTicket() {
     setChooseTicket(id);
     setChooseHotel('');
-
+ 
     number = id;
     typeOfHosting = '';
     ticketTypeId = id;
     ticketModality = name;
-    name === 'Presencial' || name === 'Online' ? (priceTicket = price / 100) : priceTicket = 0;   
+    name === 'Presencial' || name === 'Online' ? (priceTicket = price / 100) : priceTicket = 0;     
   };
 
   return (
@@ -67,9 +67,8 @@ export default function TicketPayment({ refreshTicket, setRefreshTicket }) {
   const body = {
     enrollmentId,
     ticketTypeId: ticketTypeId,
-    status: 'RESERVAD',
+    status: 'RESERVED',
   };
-  console.log(body);
 
   async function ReservedTicket() {
     try {
@@ -206,7 +205,6 @@ const TicketModality = styled.div`
   margin-bottom: 8px;
   border-radius: 20px;
   cursor: pointer;
-  background-color: ${({ id, accommodation }) => 
-    (id === number || typeOfHosting ===  accommodation ? '#FFEED2' : '#E5E5E5')};
+  background-color: ${({ id, accommodation }) => (id === number || typeOfHosting ===  accommodation ? '#FFEED2' : '#FFFFFF')};
   border: 1px solid #cecece;
 `;
