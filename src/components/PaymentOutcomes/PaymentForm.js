@@ -109,7 +109,7 @@ export default function PaymentForm({ ticketId, value, refreshTicket, setRefresh
 };
 
 const CardFormContainer = styled.div`
-    margin-top: 20px;
+    margin: 20px 0px;
     width: 100%;
     display: flex;
 `;

@@ -13,6 +13,7 @@ export default function RoomSelector({
   booking,
   isChange,
   setIsChange,
+  setCallApi
 }) {
   const token = useToken();
   const [keyRoomSelected, setKeyRoomSelected] = useState(0);
@@ -26,7 +27,9 @@ export default function RoomSelector({
       if (bookingResponse) {
         setHasBooking(current => true);
         setIsChange(current => false);
-        return toast('Reservada feita!');
+        setCallApi(true);
+        toast('Reserva feita!');
+        return window.location.reload(true);
       };
     } catch (error) {
       toast('Algum erro ocorreu, por favor tente novamente mais tarde!');
