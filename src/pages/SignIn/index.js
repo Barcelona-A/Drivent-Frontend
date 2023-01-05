@@ -13,9 +13,10 @@ import EventInfoContext from '../../contexts/EventInfoContext';
 import UserContext from '../../contexts/UserContext';
 
 import useSignIn from '../../hooks/api/useSignIn';
-import { getAuth, signInWithPopup, getRedirectResult, GithubAuthProvider } from 'firebase/auth';
 import { githubProvider } from '../../config/firebaseMethod';
 import socialMediaAuth from '../../config/firebaseAuth';
+import { signInGitHub } from '../../services/signInGitHub';
+import styled from 'styled-components';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
@@ -25,7 +26,6 @@ export default function SignIn() {
 
   const { eventInfo } = useContext(EventInfoContext);
   const { setUserData } = useContext(UserContext);
-  //const provider = new GithubAuthProvider();
 
   const navigate = useNavigate();
   
@@ -43,10 +43,15 @@ export default function SignIn() {
   }
 
   async function gitHub(provider) {
-    const res = await socialMediaAuth(provider);
-    console.log(res);
+    try {
+      const res = await socialMediaAuth(provider);
+      const userData = await signInGitHub({ email: res.email, username: res.username, accessToken: res.accessToken });
+      setUserData(userData);
+      navigate('/dashboard');
+    } catch (error) {
+      toast('Não foi possível fazer o login com o GitHub!');
+    }
   }
-  
   return (
     <AuthLayout background={eventInfo.backgroundImageUrl}>
       <Row>
@@ -59,7 +64,7 @@ export default function SignIn() {
           <Input label="E-mail" type="text" fullWidth value={email} onChange={e => setEmail(e.target.value)} />
           <Input label="Senha" type="password" fullWidth value={password} onChange={e => setPassword(e.target.value)} />
           <Button type="submit" color="primary" fullWidth disabled={loadingSignIn}>Entrar</Button>
-          <Button onClick = {() => gitHub(githubProvider)} color="" fullWidth disabled={loadingSignIn}>Entre com GitHub</Button>
+          <ButtonGit onClick = {() => gitHub(githubProvider)} fullWidth disabled={loadingSignIn} style={{ background: 'black', color: 'white' }}><img src = 'https://www.nicepng.com/png/full/52-520535_free-files-github-github-icon-png-white.png' width = '24px' style={{ marginRight: '10px' }}/>Entre com GitHub</ButtonGit>
         </form>
       </Row>
       <Row>
@@ -68,3 +73,8 @@ export default function SignIn() {
     </AuthLayout>
   );
 }
+
+const ButtonGit = styled(Button)`
+  padding: 100px;
+  
+`;
