@@ -64,7 +64,10 @@ export default function SignIn() {
           <Input label="E-mail" type="text" fullWidth value={email} onChange={e => setEmail(e.target.value)} />
           <Input label="Senha" type="password" fullWidth value={password} onChange={e => setPassword(e.target.value)} />
           <Button type="submit" color="primary" fullWidth disabled={loadingSignIn}>Entrar</Button>
-          <ButtonGit onClick = {() => gitHub(githubProvider)} fullWidth disabled={loadingSignIn} style={{ background: 'black', color: 'white' }}><img src = 'https://www.nicepng.com/png/full/52-520535_free-files-github-github-icon-png-white.png' width = '24px' style={{ marginRight: '10px' }}/>Entre com GitHub</ButtonGit>
+          <Button onClick = {() => gitHub(githubProvider)} fullWidth disabled={loadingSignIn} style={{ background: 'black', color: 'white' }}>
+            <img src = 'https://www.nicepng.com/png/full/52-520535_free-files-github-github-icon-png-white.png' width = '24px' style={{ marginRight: '10px' }}/>
+            Entre com GitHub
+          </Button>
         </form>
       </Row>
       <Row>
@@ -73,8 +76,3 @@ export default function SignIn() {
     </AuthLayout>
   );
 }
-
-const ButtonGit = styled(Button)`
-  padding: 100px;
-  
-`;
