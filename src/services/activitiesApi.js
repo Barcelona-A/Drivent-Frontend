@@ -6,6 +6,6 @@ export async function getActivitiesList(token) {
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log(response);
+  
   return response.data;
 };
