@@ -6,21 +6,19 @@ import Button from '../../../components/Form/Button';
 import { getPersonalInformations } from '../../../services/enrollmentApi';
 import { toast } from 'react-toastify';
 
-let number = -1;
-let ticketTypeId, priceTicket, priceHotel = 0;
-let typeOfHosting = '';
-let ticketModality = undefined;
+let colorCardHotel = '';
+let formBodyticketTypeId, priceTicket, priceHotel, colorCardTicket = 0;
+let ticketModalityOnline = undefined;
 
-function TemplateTicket({ id, name, price, setChooseTicket, includesHotel, chooseHotel, setChooseHotel }) {
+function TemplateTicket({ id, name, price, isRemote, setChooseTicket, setChooseHotel }) {
   function selectTicket() {
     setChooseTicket(id);
     setChooseHotel('');
- 
-    number = id;
-    typeOfHosting = '';
-    ticketTypeId = id;
-    ticketModality = name;
-    name === 'Presencial' || name === 'Online' ? (priceTicket = price / 100) : priceTicket = 0;     
+    colorCardHotel = '';
+    colorCardTicket = id;
+    formBodyticketTypeId = id;
+    ticketModalityOnline = isRemote;
+    priceTicket = price / 100; 
   };
 
   return (
@@ -32,7 +30,7 @@ function TemplateTicket({ id, name, price, setChooseTicket, includesHotel, choos
 }
 
 export default function TicketPayment({ refreshTicket, setRefreshTicket }) {
-  const [ticket, setTicket] = useState([]);
+  const [ticketTypes, setTicket] = useState([]);
   const [enrollmentId, setEnrollmentId] = useState(0);
   const [chooseTicket, setChooseTicket] = useState(0);
   const [chooseHotel, setChooseHotel] = useState('');
@@ -48,28 +46,28 @@ export default function TicketPayment({ refreshTicket, setRefreshTicket }) {
       });
   }, []);
 
-  function SelectHotel({ setChooseHotel, chooseHotel, name }) {
+  function SelectHotel({ setChooseHotel, name }) {
     setChooseHotel(name);
-    typeOfHosting = name;
-
+    colorCardHotel = name;
     if(name === 'Sem hotel') {
-      const ticketType = ticket.find(({ includesHotel, name }) => name === 'Presencial' && !includesHotel);
-      ticketTypeId = ticketType.id;
+      const ticketType = ticketTypes.find(({ includesHotel, isRemote }) => !includesHotel && !isRemote);
+      formBodyticketTypeId = ticketType.id;
       priceHotel = 0;
     }
+    
     if(name === 'Com hotel') {
-      const ticketType = ticket.find(({ includesHotel }) => includesHotel);
-      ticketTypeId = ticketType.id;
+      const ticketType = ticketTypes.find(({ includesHotel }) => includesHotel);
+      formBodyticketTypeId = ticketType.id;
       priceHotel = 350;
     }
   };
  
   const body = {
     enrollmentId,
-    ticketTypeId: ticketTypeId,
+    ticketTypeId: formBodyticketTypeId,
     status: 'RESERVED',
   };
-
+  
   async function ReservedTicket() {
     try {
       const enrollmented = await getPersonalInformations(token);
@@ -89,30 +87,28 @@ export default function TicketPayment({ refreshTicket, setRefreshTicket }) {
     }
   }
 
-  return ticket.length === 0 ? (
+  return ticketTypes.length === 0 ? (
     <SubTitle>Aguarde</SubTitle>
   ) : (
     <>
       <SubTitle>Primeiro, escolha sua modalidade de ingresso</SubTitle>
       <Applyhorizontal>
-        {ticket.map(({ id, name, price, isRemote, includesHotel }, index) => ( !includesHotel ?
+        {ticketTypes.map(({ id, name, price, isRemote, includesHotel }, index) => ( !includesHotel ?
           <TemplateTicket
+            id={id}
             name={name}
             price={price}
             isRemote={isRemote}
             includesHotel={includesHotel}
-            key={index + 1}
             setChooseTicket={setChooseTicket}
-            chooseTicket={chooseTicket}
             setChooseHotel={setChooseHotel}
-            chooseHotel={chooseHotel}
-            id={id}
+            key={index}
           /> : ''
         ))}
       </Applyhorizontal>
-      {ticketModality === undefined ? (
+      {ticketModalityOnline === undefined ? (
         ''
-      ) : ticketModality === 'Online' ? (
+      ) : ticketModalityOnline === true ? (
         <>
           <SubTitle >Fechado! O total ficou em <strong style={{ paddingLeft: 3 }}> R$ {priceTicket}</strong>. Agora é só confirmar:</SubTitle>
           <Button onClick={ReservedTicket}>RESERVAR INGRESSO</Button>
@@ -124,15 +120,16 @@ export default function TicketPayment({ refreshTicket, setRefreshTicket }) {
           <Applyhorizontal>
             <TicketModality
               className="ticketModality"
-              onClick={() => SelectHotel({ setChooseHotel, chooseHotel, name: 'Sem hotel' })}
+              onClick={() => SelectHotel({ setChooseHotel, name: 'Sem hotel' })}
               accommodation="Sem hotel"
             >
               <Modality className="typo">Sem Hotel</Modality>
               <Price className="price">+ R$ 0</Price>
             </TicketModality>{' '}
+
             <TicketModality
               className="ticketModality"
-              onClick={() => SelectHotel({ setChooseHotel, chooseHotel, name: 'Com hotel' })}
+              onClick={() => SelectHotel({ setChooseHotel, name: 'Com hotel' })}
               accommodation="Com hotel"
             >
               <Modality className="typo">Com Hotel</Modality>
@@ -140,7 +137,7 @@ export default function TicketPayment({ refreshTicket, setRefreshTicket }) {
             </TicketModality>
           </Applyhorizontal>
 
-          {typeOfHosting === '' ? '' : (<>
+          {colorCardHotel === '' ? '' : (<>
             <SubTitle >Fechado! O total ficou em <strong style={{ paddingLeft: 3 }}> R$ {priceHotel + priceTicket}</strong>. Agora é só confirmar:</SubTitle>
             <Button onClick={ReservedTicket}>RESERVAR INGRESSO</Button>
           </>)
@@ -205,6 +202,7 @@ const TicketModality = styled.div`
   margin-bottom: 8px;
   border-radius: 20px;
   cursor: pointer;
-  background-color: ${({ id, accommodation }) => (id === number || typeOfHosting ===  accommodation ? '#FFEED2' : '#FFFFFF')};
+  background-color: ${({ id, accommodation }) => 
+    (id === colorCardTicket || colorCardHotel ===  accommodation ? '#FFEED2' : '#E5E5E5')};
   border: 1px solid #cecece;
 `;
