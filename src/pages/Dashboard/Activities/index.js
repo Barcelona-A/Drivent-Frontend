@@ -3,6 +3,7 @@ import { errorsMessagesActivities } from '../../../helpers/errorsMessages';
 import { getActivitiesList } from '../../../services/activitiesApi';
 import useToken from '../../../hooks/useToken';
 import { MessageError, Title } from '../Hotel';
+import { AmountVacancy } from '../../../layouts/AmountVacancy';
 
 export default function Activities() {
   const [errorMessage, setErrorMessage] = useState('');
@@ -20,7 +21,7 @@ export default function Activities() {
 
   return (
     <>
-      {errorMessage === '' ? 'Atividades em breve!' : (<> 
+      {errorMessage === '' ? '' : (<> 
         <Title>Escolha de atividades</Title>
         <MessageError>{errorMessage}</MessageError>
       </>)}
