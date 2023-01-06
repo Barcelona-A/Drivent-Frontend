@@ -77,7 +77,7 @@ export const Title = styled.h1`
   font-family: Arial, Helvetica, sans-serif; //Roboto
   color: black;
 `;
-const SubTitle = styled.h2`
+export const SubTitle = styled.h2`
   font-size: 20px;
   font-weight: 400;
   line-height: 23.44px;
