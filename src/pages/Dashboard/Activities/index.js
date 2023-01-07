@@ -6,6 +6,7 @@ import { MessageError, Title } from '../Hotel';
 import styled from 'styled-components';
 import { SubTitle } from '../Hotel';
 import DateCard from '../../../components/Activities/DateCard';
+import { AmountVacancy } from '../../../layouts/AmountVacancy';
 
 export default function Activities() {
   const [errorMessage, setErrorMessage] = useState('');
