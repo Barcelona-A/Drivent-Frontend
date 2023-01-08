@@ -1,7 +1,5 @@
-import { getActivitiesList } from '../../services/activitiesApi';
 import styled from 'styled-components';
 import { months, daysOfWeek } from '../../helpers/days';
-import { toast } from 'react-toastify';
 
 let numberId = -1;
 
@@ -13,13 +11,6 @@ export default function DateCard({ activityDate, token, dateId, setSelected }) {
   async function selectDate(date) {
     setSelected(dateId);
     numberId = dateId;
-
-    try {
-      const response = await getActivitiesList(token, date);
-      console.log(response);
-    } catch (error) {
-      toast('Não foi possível acessar essa data');
-    }
   }
 
   return (

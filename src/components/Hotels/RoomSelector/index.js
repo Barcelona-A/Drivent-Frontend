@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { postBooking, putBooking } from '../../../services/bookingApi';
 import useToken from '../../../hooks/useToken';
 import { toast } from 'react-toastify';
+import Title from '../../Title';
 
 export default function RoomSelector({
   hotelSelected,
@@ -51,13 +52,6 @@ export default function RoomSelector({
     </>
   );
 }
-
-const Title = styled.h2`
-  font-family: 'Roboto', sans-serif;
-  color: #898989;
-  font-size: 20px;
-  margin-top: 3rem;
-`;
 
 const Rooms = styled.div`
   margin: 1.5rem 0;
