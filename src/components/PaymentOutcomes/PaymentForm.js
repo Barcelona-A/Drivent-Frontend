@@ -17,6 +17,25 @@ export default function PaymentForm({ ticketId, value, refreshTicket, setRefresh
   const [issuer, setIssuer] = useState('');
   const token = useToken();
 
+  function clearNumber(value = '') {
+    return value.replace(/\D+/g, '');
+  }
+
+  function formatExpirationDate(value) {
+    const clearValue = clearNumber(value);
+  
+    if (clearValue.length >= 3) {
+      return `${clearValue.slice(0, 2)}/${clearValue.slice(2, 4)}`;
+    }
+  
+    return clearValue;
+  }
+
+  function handleExpiry(e) {
+    e.target.value = formatExpirationDate(e.target.value);
+    setExpiry(e.target.value);
+  }
+
   function handleCallback({ issuer }, isValid) {
     if (isValid) {
       setIssuer(issuer);
@@ -25,6 +44,10 @@ export default function PaymentForm({ ticketId, value, refreshTicket, setRefresh
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    if(!issuer || !number || !name || !expiry || !cvc) {
+      return toast('Pagamento não concluído, por favor confira seus dados');
+    }
 
     const cardData = {
       name,
@@ -65,10 +88,12 @@ export default function PaymentForm({ ticketId, value, refreshTicket, setRefresh
             <CardInput
               type="tel"
               name="number"
+              maxLength={16}
               value={number}
-              placeholder={'Card Number'}
+              placeholder={'Card Number(only numbers)'}
               onChange={e => setNumber(e.target.value)}
               onFocus={e => setFocus(e.target.name)}
+              required
             />
             
             <CardInput
@@ -78,6 +103,7 @@ export default function PaymentForm({ ticketId, value, refreshTicket, setRefresh
               placeholder={'Name'}
               onChange={e => setName(e.target.value)}
               onFocus={e => setFocus(e.target.name)}
+              required
             />
             <div>
               <CardInput
@@ -85,17 +111,21 @@ export default function PaymentForm({ ticketId, value, refreshTicket, setRefresh
                 name="Valid thru"
                 value={expiry}
                 placeholder={'Valid thru'}
-                onChange={e => setExpiry(e.target.value)}
+                pattern={'dd/dd'}
+                onChange={handleExpiry}
                 onFocus={e => setFocus(e.target.name)}
+                required
               />
 
               <CardInput
                 type="tel"
                 name="cvc"
                 value={cvc}
+                maxLength={3}
                 placeholder={'CVV'}
                 onChange={e => setCvc(e.target.value)}
                 onFocus={e => setFocus(e.target.name)}
+                required
               />
             </div>
           </InputsContainer>
@@ -115,7 +145,8 @@ const CardFormContainer = styled.div`
 `;
 
 const InputsContainer = styled.div`
-    height: 225px;
+    width: 80%;
+    height: 215px;
     padding: 10px 25px;
     margin-top: -25px;
 

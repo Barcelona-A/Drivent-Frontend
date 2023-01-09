@@ -4,7 +4,7 @@ export const SummaryWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 35%;
+  width: 33%;
   background-color: #FFEED2;
   flex-wrap: wrap;
   padding: 2rem 0;
