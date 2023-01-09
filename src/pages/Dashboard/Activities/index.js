@@ -6,18 +6,18 @@ import { MessageError, Title } from '../Hotel';
 import styled from 'styled-components';
 import { SubTitle } from '../Hotel';
 import DateCard from '../../../components/Activities/DateCard';
-import { AmountVacancy } from '../../../layouts/AmountVacancy';
+import { ActivitySelector } from '../../../components/Activities/ActivitySelector';
 
 export default function Activities() {
   const [errorMessage, setErrorMessage] = useState('');
-  const [activities, setActivities] = useState([]);
+  const [activitiesDates, setActivitiesDates] = useState([]);
   const token = useToken();
   const [selected, setSelected] = useState(0);
 
   useEffect( async() => {
     try {
       const response = await getActivitiesList(token);
-      setActivities(response);
+      setActivitiesDates(response);
     } catch (error) {
       setErrorMessage(errorsMessagesActivities[error.response.status]);
     }
@@ -30,8 +30,9 @@ export default function Activities() {
         <>
           <SubTitle>Primeiro, filtre pelo dia do evento:</SubTitle>
           <ActivitiesDates>
-            { activities?.map((value, index) => <DateCard key = { index } activityDate = { value } token = { token } dateId = { index + 1 } setSelected = { setSelected }/>)}
+            { activitiesDates?.map((value, index) => <DateCard key = { index } activityDate = { value } token = { token } dateId = { index + 1 } setSelected = { setSelected }/>)}
           </ActivitiesDates>
+          {selected !== 0? <ActivitySelector activitiesDate={activitiesDates[selected - 1]} selectedIndex={selected} /> : ''}
         </>
         :
         <MessageError>{errorMessage}</MessageError>
