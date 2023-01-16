@@ -12,7 +12,6 @@ export default function Hotel() {
   const token = useToken();
   const [hasBooking, setHasBooking] = useState(false);
   const [isChange, setIsChange] = useState(false);
-  const [callApi, setCallApi] = useState(false);
   const [hotels, setHotels] = useState([]);
   const [hotelRooms, setHotelRooms] = useState([]);
   const [booking, setBooking] = useState({});
@@ -38,7 +37,7 @@ export default function Hotel() {
     } catch (error) {
 
     }
-  }, [hasBooking, isChange, callApi]);
+  }, [hasBooking, isChange]);
 
   return (
     <>
@@ -59,8 +58,7 @@ export default function Hotel() {
           {
             selected !== 0 ?
               <>
-                <RoomSelector hotelSelected={selected} hotelRooms={hotelRooms} setHasBooking={setHasBooking} booking={booking} isChange={isChange} setIsChange={setIsChange} 
-                  setCallApi = {setCallApi}/>
+                <RoomSelector hotelSelected={selected} hotelRooms={hotelRooms} setHasBooking={setHasBooking} booking={booking} isChange={isChange} setIsChange={setIsChange} />
               </> 
               : '' 
           }

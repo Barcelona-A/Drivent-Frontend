@@ -5,7 +5,7 @@ import { SubTitle } from '../../layouts/Subtitle';
 export default function ConfirmedPayment() {
   return (
     <SuccessfulPayment>
-      <SubTitle>Pagemento</SubTitle>
+      <SubTitle>Pagamento</SubTitle>
       <Check>
         <FaCheckCircle
           style={{

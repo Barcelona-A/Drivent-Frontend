@@ -23,7 +23,7 @@ export function ActivityCard({
     else setSelected(current => false);
   }, [selectedId]);
 
-  useEffect(() => setVacancy(activityObj.capacity - activityObj.ActivityBooking.length), []);
+  useEffect(() => setVacancy(activityObj.capacity - activityObj._count.ActivityBooking), []);
 
   return (
     <Card duration={durationInHours} selected={selected}> 
