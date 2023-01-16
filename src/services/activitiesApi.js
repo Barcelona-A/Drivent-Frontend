@@ -9,3 +9,14 @@ export async function getActivitiesList(token, date = null) {
     },
   })).data;
 };
+
+export async function postActivitesBooking(body, token) {
+  const response = await api.post('/activities', body, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};
+
