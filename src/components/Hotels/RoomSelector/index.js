@@ -6,6 +6,7 @@ import { postBooking, putBooking } from '../../../services/bookingApi';
 import useToken from '../../../hooks/useToken';
 import { toast } from 'react-toastify';
 import Title from '../../Title';
+import sleep from '../../../helpers/sleep';
 
 export default function RoomSelector({
   hotelSelected,
@@ -19,18 +20,17 @@ export default function RoomSelector({
   const token = useToken();
   const [keyRoomSelected, setKeyRoomSelected] = useState(0);
 
-  function handleBooking(roomId) {
+  async function handleBooking(roomId) {
     const newBooking = { roomId };
     try {
       let bookingResponse;
       if (isChange) bookingResponse = putBooking(newBooking, booking.bookingId, token);
       else bookingResponse = postBooking(newBooking, token);
       if (bookingResponse) {
+        await sleep(100);
         setHasBooking(current => true);
         setIsChange(current => false);
-        setCallApi(true);
         toast('Reserva feita!');
-        return window.location.reload(true);
       };
     } catch (error) {
       toast('Algum erro ocorreu, por favor tente novamente mais tarde!');
