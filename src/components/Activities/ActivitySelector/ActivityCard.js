@@ -3,12 +3,16 @@ import { intervalToDuration } from 'date-fns';
 import { AmountVacancy } from '../../../layouts/AmountVacancy';
 import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
+import  useToken  from '../../../hooks/useToken';
 import utc from 'dayjs/plugin/utc';
+import { postActivitesBooking } from '../../../services/activitiesApi';
+import { toast } from 'react-toastify';
 dayjs.extend(utc);
 
 export function ActivityCard({
   activityObj,
-  selectedId
+  selectedId,
+  id
 }) {
   const [vacancy, setVacancy] = useState(undefined);
   const [selected, setSelected] = useState(false);
@@ -17,16 +21,29 @@ export function ActivityCard({
     end: new Date(activityObj.endsAt),
   });
   const durationInHours = duration.hours + duration.minutes/60;
+  const token = useToken();
   
   useEffect(() => {
     if (selectedId === activityObj.id) setSelected(current => true);
     else setSelected(current => false);
   }, [selectedId]);
 
-  useEffect(() => setVacancy(activityObj.capacity - activityObj._count.ActivityBooking), []);
+  useEffect(() => setVacancy(activityObj?.capacity - activityObj?._count.ActivityBooking), []);
+
+  function createActivityBooking() {
+    const body = {
+      activityId: id,
+    };
+    try {
+      postActivitesBooking(body, token);
+      return toast('Atividade registrada com sucesso');
+    } catch (error) {
+      return toast('Ops, algo deu errado, tente novamente');
+    };
+  }
 
   return (
-    <Card duration={durationInHours} selected={selected}> 
+    <Card onClick={createActivityBooking} duration={durationInHours} selected={selected}> 
       <Info>
         <h3>{activityObj.name}</h3>
         <span>{dayjs.utc(activityObj.startsAt).format('hh:mm')} - {dayjs.utc(activityObj.endsAt).format('hh:mm')}</span> 
